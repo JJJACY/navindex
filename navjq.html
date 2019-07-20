@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>navigation</title>
+  <meta charset="utf-8">
+  <script type="text/javascript" src="./js/jquery-3.4.1.min.js"></script>
+  <style type="text/css">
+    *{
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    .h400{
+      height: 400px;
+      background: #FFDAB9;
+      font-size: 60px;
+      color: #fff;
+      border-bottom: 1px solid #fff;
+    }
+    .navigator-bar{
+      height: 60px;
+    }
+    .navigator-bar.active{
+      position: fixed;
+      top: 0;
+      left: 0;
+      background: #fff;
+    }
+    ul{
+      display: flex;
+      justify-content: space-between;
+      list-style: none;
+    }
+    ul li{
+      height: 60px;
+      width: 380px;
+      line-height: 60px;
+      text-align: center;
+      color: #00868B;
+      background: #00FFFF;
+    }
+    .h800{
+      height: 800px;
+      font-size: 60px;
+    }
+    .navigator-bar.fixed-top ul{
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+    }
+    .navigator-bar-item:hover{
+      background: #666;
+      color: #fff;
+    }
+    .navigator-bar-item.active{
+      background: #333;
+      color: #fff;
+    }
+  </style>
+</head>
+<body>
+  <div class="section-banner h400">SECTION Banner</div>
+    <div class="navigator-bar" id="navigator-bars">
+      <ul>
+        <li class="navigator-bar-item" data-nav="section-1">SECTION 1</li>
+        <li class="navigator-bar-item" data-nav="section-2">SECTION 2</li>
+        <li class="navigator-bar-item" data-nav="section-3">SECTION 3</li>
+        <li class="navigator-bar-item" data-nav="section-4">SECTION 4</li>
+        <li class="navigator-bar-item" data-nav="section-5">SECTION 5</li>
+      </ul>
+    </div>
+    <div class="h400 height400" id="section-1">SECTION 1</div>
+    <div class="h400 height400" id="section-2">SECTION 2</div>
+    <div class="h400 height400" id="section-3">SECTION 3</div>
+    <div class="h400 height400" id="section-4">SECTION 4</div>
+    <div class="h400 height400" id="section-5">SECTION 5</div>
+  <div class="h800">SECTION Footer</div>
+</body>
+<script type="text/javascript">
+  const PAGE = {
+    data: {
+    navigatorBarIdArr: ['section-1','section-2','section-3','section-4','section-5'],
+    navigatorBarActiveId: '',
+    navigatorBarFixed: false,
+    navigatorBarFixedOffset: 460,
+    navigatorBarHeight: 60,
+    },
+    init: function(){
+      this.bind();
+    },
+    bind: function(){
+      $(window).on('scroll',this.refreshNavigator);
+      $('.navigator-bar-item').on('click',this.goNavigator);
+    },
+    refreshNavigator: function(){
+      PAGE.fixedNavigator();
+      PAGE.heightLightNavigator();
+    },
+    fixedNavigator: function(){
+      let scroll = $(window).scrollTop();
+      let navigatorBarFixed = 
+      scroll >= (PAGE.data.navigatorBarFixedOffset + PAGE.data.navigatorBarHeight);
+      if (PAGE.data.navigatorBarFixed !== navigatorBarFixed){        
+        PAGE.data.navigatorBarFixed = navigatorBarFixed;
+        if(navigatorBarFixed){
+          $('#navigator-bars').addClass('active') 
+        }else{
+          $('#navigator-bars').removeClass('active') 
+        }
+      }
+    },
+    heightLightNavigator: function(){
+      let scroll = $(window).scrollTop();
+      let itemNav;
+      $.each($('.height400'),(index,item)=>{
+        $('.navigator-bar-item').removeClass('active');
+        if(scroll>=item.offsetTop-PAGE.data.navigatorBarHeight){
+          console.log(item)
+          itemNav= $($('.navigator-bar-item')[index]);
+        }
+      })
+       $(itemNav).addClass('active');    
+    },
+    goNavigator: function(e){
+      let id = $(this).attr('data-nav');//$(this).data('nav');
+      let offsetTop = $(`#${id}`).offset().top;
+      document.documentElement.scrollTop = offsetTop - PAGE.data.navigatorBarHeight;
+    }
+  }
+  PAGE.init();
+</script>
+</html>

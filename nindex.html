@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>导航</title>
+  <meta charset="utf-8">
+  <style type="text/css">
+    *{margin: 0;
+      padding:0;
+      box-sizing: border-box;
+    }
+    ul{
+      display: flex;
+      justify-content: space-between;
+      list-style: none;
+    }
+    ul li{
+      height: 60px;
+      width: 380px;
+      line-height: 60px;
+      text-align: center;
+      color: #00868B;
+      background: #00FFFF;
+    }
+    .nav-bar.fixed-top ul{
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+    }
+    .nav-bar-item:hover{
+      background: #666;
+      color: #fff;
+    }
+    .nav-bar-item .active{
+      background: #333;
+      color: #fff;
+    }
+    .h400{
+      height: 400px;
+      font-size: 60px;
+      line-height: 60px;
+      background: #1E90FF;
+      border-bottom: 1px solid #fff;
+    }
+    .h800{
+      height: 800px;
+    }
+
+  </style>
+</head>
+<body>
+  <div class="banner-section h400">Banner-section</div>
+  <div class="nav-bar" id="nav-bar">
+    <ul>
+      <li class="nav-bar-item" data-nav="section-1">Section1</li>
+      <li class="nav-bar-item" data-nav="section-2">Section2</li>
+      <li class="nav-bar-item" data-nav="section-3">Section3</li>
+      <li class="nav-bar-item" data-nav="section-4">Section4</li>
+      <li class="nav-bar-item" data-nav="section-5">Section5</li>
+    </ul>
+  </div>
+  <div class="h400" id="section-1">Section1</div>
+  <div class="h400" id="section-2">Section2</div>
+  <div class="h400" id="section-3">Section3</div>
+  <div class="h400" id="section-4">Section4</div>
+  <div class="h400" id="section-5">Section5</div>
+  <div class="h800">Section footer</div>
+  <script type="text/javascript">
+    const PAGE ={
+      data:{
+      navigatorBarIdArr: ['section-1','section-2','section-3','section-4','section-5'],
+      navigatorBarActiveId: '',
+      navigatorBarFixed: false,
+      navigatorBarFixedOffset: 460,
+      navigatorBarHeight: 60,
+      },
+      init: function(){
+        this.bind();
+      },
+      bind: function(){
+        window.addEventListener('scroll',this.refreshNavigator);
+        let navigatorBar = document.getElementById('nav-bar');
+        this.onEventLister(navigatorBar,'click','nav-bar-item',this.goNavigator);
+      },
+      onEventLister: function(parentNode,action,childClassName,callback) {
+        parentNode.addEventListener(action,function(e){
+          e.target.className.indexOf(childClassName) >= 0 && callback(e);
+        })
+      },
+      refreshNavigator: function(){
+      PAGE.fixedNavigator();
+      PAGE.heightLightNavigator();
+      },
+      fixedNavigator: function(){
+        let scrollTop =document.documentElement.scrollTop;
+        let navigatorBarTop = (PAGE.data.navigatorBarFixedOffset + PAGE.data.navigatorBarHeight);
+        let navigatorBarFixed = scrollTop >= navigatorBarTop;
+        if(PAGE.data.navigatorBarFixed !== navigatorBarFixed){
+          PAGE.data.navigatorBarFixed = navigatorBarFixed;
+          let navigatorBar = document.getElementById('nav-bar');
+          if(navigatorBarFixed){
+            navigatorBar.className ='nav-bar fixed-top'
+          }else{
+            navigatorBar.className ='nav-bar '
+          }
+        }
+      },
+      heightLightNavigator: function(){
+        let scrollTop = document.documentElement.scrollTop;        
+        let filterNav = PAGE.data.navigatorBarIdArr.filter( data => {
+          let offsetTop = document.getElementById(data).offsetTop;
+          return scrollTop >= offsetTop - PAGE.data.navigatorBarHeight 
+        })
+        let navigatorBarActiveId = filterNav.length? filterNav[filterNav.length -1]:'';
+        if(PAGE.data.navigatorBarActiveId !== navigatorBarActiveId){
+          PAGE.data.navigatorBarActiveId = navigatorBarActiveId;
+          let navitems =document.getElementsByClassName('nav-bar-item');
+          for(i=0;i<navitems.length;i++){
+            let navitem = navitems[i];
+            let datanav = navitem.dataset.nav;
+            if( datanav === navigatorBarActiveId){
+              navitem.className = 'nav-bar-item active';
+            }else{
+              navitem.className = 'nav-bar-item';
+            }
+          }
+        }
+      },
+      goNavigator: function(e){
+        let id = e.target.dataset.nav;
+        let offsetTop = document.getElementById(id).offsetTop - PAGE.data.navigatorBarHeight;
+        document.documentElement.scrollTop = offsetTop;
+      }
+    }
+    PAGE.init();
+  </script>
+</body>
+</html>
